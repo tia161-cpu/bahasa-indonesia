@@ -1,0 +1,923 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  BookOpen, Video, FileText, Lock, Unlock, Download, UserCheck, 
+  CheckCircle, XCircle, Clock, Shield, LogOut, Search, Plus, Trash2, 
+  Award, HelpCircle, ChevronRight, Play, RefreshCw, Eye
+} from 'lucide-react';
+
+const INITIAL_MATERI = [
+  {
+    id: 'm1',
+    kelas: 'X',
+    judul: 'Teks Laporan Hasil Observasi (LHO)',
+    bab: 'Bab 1: Mengungkap Fakta Alam',
+    deskripsi: 'Memahami struktur, ciri kebahasaan, dan cara menyusun teks LHO berdasarkan pengamatan nyata.',
+    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Placeholder
+    konten: `
+### A. Pengertian Teks LHO
+Teks Laporan Hasil Observasi adalah teks yang memberikan informasi secara umum tentang sesuatu berdasarkan fakta dari hasil pengamatan secara langsung.
+
+### B. Struktur Teks LHO
+1. **Pernyataan Umum / Klasifikasi**: Berisi pembuka atau pengantar hal yang akan disampaikan.
+2. **Deskripsi Bagian**: Berisi rincian detail mengenai objek yang diamati.
+3. **Deskripsi Manfaat / Kesimpulan**: Menjelaskan manfaat dari objek yang diamati dalam kehidupan.
+    `
+  },
+  {
+    id: 'm2',
+    kelas: 'XI',
+    judul: 'Teks Prosedur Kompleks',
+    bab: 'Bab 1: Menyusun Prosedur Kerja',
+    deskripsi: 'Langkah-langkah terstruktur dalam melakukan atau membuat sesuatu dengan petunjuk jelas.',
+    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    konten: `
+### A. Pengertian
+Teks prosedur adalah teks yang berisi cara, tujuan untuk membuat atau melakukan sesuatu hal langkah demi langkah yang tepat secara berurutan sehingga menghasilkan suatu tujuan yang diinginkan.
+    `
+  },
+  {
+    id: 'm3',
+    kelas: 'XII',
+    judul: 'Surat Lamaran Pekerjaan & Teks Editorial',
+    bab: 'Bab 1: Surat Menyurat Resmi',
+    deskripsi: 'Seni menulis surat resmi lamaran kerja dan menganalisis opnid/pandangan media massa.',
+    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    konten: `
+### A. Unsur-Unsur Surat Lamaran Kerja
+1. Tempat dan tanggal pembuatan surat
+2. Lampiran dan hal
+3. Alamat surat
+4. Salam pembuka
+5. Isi surat (pembuka, inti, penutup)
+6. Salam menutup dan tanda tangan.
+    `
+  }
+];
+
+const INITIAL_SOAL_LATIHAN = {
+  pilihanGanda: [
+    {
+      id: 'pg1',
+      kelas: 'X',
+      soal: 'Berikut yang TIDAK termasuk dalam struktur teks Laporan Hasil Observasi adalah...',
+      opsi: ['Pernyataan Umum', 'Deskripsi Bagian', 'Komplikasi / Orientasi', 'Deskripsi Manfaat'],
+      jawaban: 2
+    },
+    {
+      id: 'pg2',
+      kelas: 'XI',
+      soal: 'Verba material dalam teks prosedur mengacu pada...',
+      opsi: ['Tindakan fisik', 'Pengungkapan perasaan', 'Kata hubung waktu', 'Pertanyaan implisit'],
+      jawaban: 0
+    }
+  ],
+  menjodohkan: [
+    {
+      id: 'm_1',
+      kelas: 'X',
+      soal: 'Jodohkan istilah kebahasaan dengan artinya yang tepat!',
+      pairs: [
+        { item: 'Verba Material', match: 'Kata kerja tindakan nyata' },
+        { item: 'Nomina', match: 'Kata benda' },
+        { item: 'Afonim', match: 'Istilah teknis bidang ilmu' }
+      ]
+    }
+  ],
+  essay: [
+    {
+      id: 'es1',
+      kelas: 'X',
+      soal: 'Jelaskan perbedaan mendasar antara teks Laporan Hasil Observasi dengan teks Deskripsi!',
+      kunciSederhana: 'LHO bersifat objektif dan universal/umum, sedangkan Teks Deskripsi bersifat subjektif dan khusus pada satu objek spesifik.'
+    }
+  ]
+};
+
+const INITIAL_ULANGAN = [
+  {
+    id: 'ulg_x',
+    kelas: 'X',
+    judul: 'Ulangan Harian 1: Teks LHO & Anekdot',
+    durasiMenit: 30,
+    soalList: [
+      { id: 1, pertanyaan: 'Teks LHO disusun berdasarkan...', opsi: ['Imajinasi penulis', 'Hasil pengamatan nyata/fakta', 'Cerita turun temurun', 'Pendapat pribadi pengamat'], jawaban: 1 },
+      { id: 2, pertanyaan: 'Ciri bahasa teks LHO yang menggunakan kata benda disebut...', opsi: ['Nomina', 'Verba', 'Adjektiva', 'Adverbia'], jawaban: 0 },
+      { id: 3, pertanyaan: 'Bagian akhir teks LHO yang berisi kegunaan objek dinamakan...', opsi: ['Pernyataan umum', 'Deskripsi bagian', 'Deskripsi manfaat', 'Orientasi'], jawaban: 2 },
+    ]
+  },
+  {
+    id: 'ulg_xi',
+    kelas: 'XI',
+    judul: 'Ulangan Harian 1: Teks Prosedur & Eksplanasi',
+    durasiMenit: 45,
+    soalList: [
+      { id: 1, pertanyaan: 'Kata kerja yang memberikan perintah disebut...', opsi: ['Verba Imperatif', 'Verba Deklaratif', 'Verba Interogatif', 'Verba Pasif'], jawaban: 0 },
+      { id: 2, pertanyaan: 'Teks eksplanasi menjelaskan tentang proses...', opsi: ['Pembuatan resep', 'Fenomena alam/sosial', 'Cerita fiksi', 'Perdebatan opini'], jawaban: 1 }
+    ]
+  },
+  {
+    id: 'ulg_xii',
+    kelas: 'XII',
+    judul: 'Ulangan Harian 1: Surat Lamaran & Editorial',
+    durasiMenit: 45,
+    soalList: [
+      { id: 1, pertanyaan: 'Penulisan tempat dan tanggal surat lamaran yang benar adalah...', opsi: ['Temanggung, 20 Agustus 2026', 'Temanggung. 20-08-2026', 'temanggung 20 agustus 2026', 'Temanggung, 20/08/2026'], jawaban: 0 }
+    ]
+  }
+];
+
+export default function App() {
+  // Role & Session State
+  const [role, setRole] = useState('siswa'); // 'siswa' | 'guru'
+  const [user, setUser] = useState({ name: 'Ahmad Siswa', kelas: 'X', email: 'ahmad@siswa.id' });
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+  // App Navigation
+  const [activeTab, setActiveTab] = useState('materi'); // 'materi' | 'latihan' | 'ulangan' | 'rekap' | 'kelola'
+  const [selectedKelas, setSelectedKelas] = useState('X');
+
+  // Exam Locking State (Controlled by Teacher)
+  const [examLocks, setExamLocks] = useState({
+    'X': false,  // false = locked, true = unlocked
+    'XI': false,
+    'XII': false
+  });
+
+  // Submitted Exam Results
+  const [results, setResults] = useState([
+    { id: 'res_1', nama: 'Budi Santoso', kelas: 'X', email: 'budi@siswa.id', judulUlangan: 'Ulangan Harian 1: Teks LHO', nilai: 100, tanggal: '2026-08-20 09:15' },
+    { id: 'res_2', nama: 'Siti Aminah', kelas: 'X', email: 'siti@siswa.id', judulUlangan: 'Ulangan Harian 1: Teks LHO', nilai: 66, tanggal: '2026-08-20 10:00' }
+  ]);
+
+  // Exam Execution States
+  const [isTakingExam, setIsTakingExam] = useState(false);
+  const [currentExam, setCurrentExam] = useState(null);
+  const [studentAnswers, setStudentAnswers] = useState({});
+  const [examScore, setExamScore] = useState(null);
+
+  // Modals / Helpers
+  const [loginForm, setLoginForm] = useState({ email: '', password: '', role: 'siswa', kelas: 'X' });
+  const [selectedMateri, setSelectedMateri] = useState(null);
+
+  useEffect(() => {
+    if (user && role === 'siswa') {
+      setSelectedKelas(user.kelas);
+    }
+  }, [user, role]);
+
+  // Handle Authentication
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (loginForm.role === 'guru') {
+      if (loginForm.password === 'guru123') { // Simple default password for Teacher
+        setRole('guru');
+        setUser({ name: 'Ibu/Bapak Guru (Pengampu)', email: loginForm.email, kelas: 'ALL' });
+        setIsLoggedIn(true);
+      } else {
+        alert('Password Guru Salah! (Gunakan demo: guru123)');
+      }
+    } else {
+      setRole('siswa');
+      setUser({ 
+        name: loginForm.email.split('@')[0] || 'Siswa', 
+        email: loginForm.email, 
+        kelas: loginForm.kelas 
+      });
+      setSelectedKelas(loginForm.kelas);
+      setIsLoggedIn(true);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setIsTakingExam(false);
+  };
+
+  const startExam = (ulangan) => {
+    if (!examLocks[selectedKelas] && role !== 'guru') {
+      alert('Ulangan ini masih TERKUNCI oleh Guru. Tunggu hingga jadwalnya dibuka!');
+      return;
+    }
+    setCurrentExam(ulangan);
+    setStudentAnswers({});
+    setExamScore(null);
+    setIsTakingExam(true);
+  };
+
+  const submitExam = () => {
+    if (!currentExam) return;
+    
+    let correctCount = 0;
+    currentExam.soalList.forEach((soal) => {
+      if (studentAnswers[soal.id] === soal.jawaban) {
+        correctCount++;
+      }
+    });
+
+    const finalScore = Math.round((correctCount / currentExam.soalList.length) * 100);
+    setExamScore(finalScore);
+
+    // Save Result
+    const newResult = {
+      id: 'res_' + Date.now(),
+      nama: user.name,
+      kelas: selectedKelas,
+      email: user.email,
+      judulUlangan: currentExam.judul,
+      nilai: finalScore,
+      tanggal: new Date().toLocaleString('id-ID')
+    };
+
+    setResults(prev => [newResult, ...prev]);
+  };
+
+  const exportToCSV = () => {
+    if (results.length === 0) {
+      alert('Belum ada data nilai untuk diimpor.');
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "No,Nama Siswa,Email,Kelas,Judul Ulangan,Nilai,Tanggal Mengerjakan\n";
+
+    results.forEach((r, idx) => {
+      csvContent += `${idx + 1},"${r.nama}","${r.email}","${r.kelas}","${r.judulUlangan}",${r.nilai},"${r.tanggal}"\n`;
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Rekap_Nilai_BahasaIndonesia_Kelas_${selectedKelas}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans">
+        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
+          <div className="text-center mb-8">
+            <div className="bg-emerald-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-200">
+              <BookOpen className="w-8 h-8" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-800">Ruang Bahasa</h1>
+            <p className="text-slate-500 text-sm mt-1">Portal Pembelajaran Bahasa Indonesia SMA</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">Masuk Sebagai</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLoginForm({ ...loginForm, role: 'siswa' })}
+                  className={`py-2 text-sm rounded-lg font-medium border ${loginForm.role === 'siswa' ? 'bg-emerald-50 border-emerald-600 text-emerald-700' : 'border-slate-200 text-slate-600'}`}
+                >
+                  Siswa
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLoginForm({ ...loginForm, role: 'guru' })}
+                  className={`py-2 text-sm rounded-lg font-medium border ${loginForm.role === 'guru' ? 'bg-emerald-50 border-emerald-600 text-emerald-700' : 'border-slate-200 text-slate-600'}`}
+                >
+                  Guru / Admin
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">Email Siswa / Guru</label>
+              <input
+                type="email"
+                required
+                value={loginForm.email}
+                onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                placeholder={loginForm.role === 'siswa' ? "contoh: siswa@sekolah.sch.id" : "guru@sekolah.sch.id"}
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm"
+              />
+            </div>
+
+            {loginForm.role === 'siswa' ? (
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">Pilih Kelas</label>
+                <select
+                  value={loginForm.kelas}
+                  onChange={(e) => setLoginForm({ ...loginForm, kelas: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm bg-white"
+                >
+                  <option value="X">Kelas X</option>
+                  <option value="XI">Kelas XI</option>
+                  <option value="XII">Kelas XII</option>
+                </select>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">Password Guru</label>
+                <input
+                  type="password"
+                  required
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                  placeholder="Ketik password guru (demo: guru123)"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm"
+                />
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-lg transition-colors shadow-md mt-6"
+            >
+              Masuk ke Aplikasi
+            </button>
+          </form>
+
+          <div className="mt-6 text-center text-xs text-slate-400">
+            {loginForm.role === 'siswa' ? (
+              <p>*Password dapat diminat langsung ke Guru Pengampu Bahasa Indonesia.</p>
+            ) : (
+              <p>Demo Password Guru: <span className="font-mono text-emerald-600">guru123</span></p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col">
+      {/* Top Navbar */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="bg-emerald-600 text-white p-2 rounded-xl shadow-sm">
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-bold text-lg text-slate-800 leading-none block">Ruang Bahasa</span>
+              <span className="text-xs text-emerald-600 font-medium">Bahasa Indonesia SMA</span>
+            </div>
+          </div>
+
+          {/* Class Switcher & Profile */}
+          <div className="flex items-center space-x-4">
+            <div className="hidden sm:flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+              {['X', 'XI', 'XII'].map((k) => (
+                <button
+                  key={k}
+                  onClick={() => setSelectedKelas(k)}
+                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                    selectedKelas === k 
+                      ? 'bg-white text-emerald-700 shadow-sm' 
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Kelas {k}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center space-x-3 pl-4 border-l border-slate-200">
+              <div className="text-right hidden md:block">
+                <p className="text-xs font-bold text-slate-700">{user.name}</p>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                  role === 'guru' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                }`}>
+                  {role === 'guru' ? 'Guru Pengampu' : `Siswa Kelas ${selectedKelas}`}
+                </span>
+              </div>
+              <button
+                onClick={handleLogout}
+                title="Keluar"
+                className="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Body */}
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row gap-6">
+        
+        {/* Sidebar Navigation */}
+        <aside className="w-full md:w-64 flex-shrink-0">
+          <div className="bg-white rounded-xl border border-slate-200 p-3 shadow-sm sticky top-20 space-y-1">
+            <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              Menu Utama
+            </div>
+            
+            <button
+              onClick={() => { setActiveTab('materi'); setIsTakingExam(false); }}
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'materi' ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Materi & Video</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('latihan'); setIsTakingExam(false); }}
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'latihan' ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              <span>Latihan Soal</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('ulangan'); setIsTakingExam(false); }}
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'ulangan' ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Award className="w-4 h-4" />
+              <span>Ulangan Harian</span>
+              {!examLocks[selectedKelas] && (
+                <Lock className="w-3.5 h-3.5 ml-auto text-amber-500" />
+              )}
+            </button>
+
+            {role === 'guru' && (
+              <>
+                <div className="pt-4 px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Panel Guru
+                </div>
+
+                <button
+                  onClick={() => setActiveTab('rekap')}
+                  className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    activeTab === 'rekap' ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Rekap Nilai Siswa</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('kelola')}
+                  className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    activeTab === 'kelola' ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <Shield className="w-4 h-4" />
+                  <span>Kontrol Akses Ulangan</span>
+                </button>
+              </>
+            )}
+          </div>
+        </aside>
+
+        {/* Content Area */}
+        <main className="flex-1">
+          {/* Kelas Selector Bar for Mobile */}
+          <div className="flex sm:hidden mb-4 bg-white p-1 rounded-lg border border-slate-200 justify-around">
+            {['X', 'XI', 'XII'].map((k) => (
+              <button
+                key={k}
+                onClick={() => setSelectedKelas(k)}
+                className={`px-4 py-1.5 text-xs font-semibold rounded-md ${
+                  selectedKelas === k ? 'bg-emerald-600 text-white' : 'text-slate-600'
+                }`}
+              >
+                Kelas {k}
+              </button>
+            ))}
+          </div>
+
+          {/* TAB 1: MATERI & VIDEO */}
+          {activeTab === 'materi' && (
+            <div className="space-y-6">
+              <div className="bg-emerald-600 text-white p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                <div className="relative z-10">
+                  <span className="text-xs font-semibold uppercase tracking-wider bg-emerald-700/60 px-3 py-1 rounded-full border border-emerald-500/30">
+                    Materi Pembelajaran Kelas {selectedKelas}
+                  </span>
+                  <h2 className="text-2xl font-bold mt-2">Kumpulan Modul & Video Tutorial</h2>
+                  <p className="text-emerald-100 text-sm mt-1 max-w-xl">
+                    Pelajari teks-teks Bahasa Indonesia secara mendalam lengkap dengan video penjelasan dari guru.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {INITIAL_MATERI.filter(m => m.kelas === selectedKelas).map((materi) => (
+                  <div key={materi.id} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
+                    <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
+                      <div>
+                        <span className="text-xs font-semibold text-emerald-600">{materi.bab}</span>
+                        <h3 className="text-lg font-bold text-slate-800">{materi.judul}</h3>
+                        <p className="text-sm text-slate-500 mt-1">{materi.deskripsi}</p>
+                      </div>
+                      <button
+                        onClick={() => setSelectedMateri(selectedMateri?.id === materi.id ? null : materi)}
+                        className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-center space-x-2 transition-colors self-start md:self-center"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>{selectedMateri?.id === materi.id ? 'Tutup Materi' : 'Pelajari Sekarang'}</span>
+                      </button>
+                    </div>
+
+                    {/* Detailed View Modal/Accordion */}
+                    {selectedMateri?.id === materi.id && (
+                      <div className="mt-4 pt-4 border-t border-slate-100 space-y-6">
+                        {/* Video Player Frame */}
+                        <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden relative flex items-center justify-center">
+                          <iframe
+                            className="w-full h-full"
+                            src={materi.videoUrl}
+                            title={materi.judul}
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+
+                        {/* Text Material Content */}
+                        <div className="prose prose-slate max-w-none bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
+                          <pre className="font-sans whitespace-pre-wrap">{materi.konten}</pre>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {INITIAL_MATERI.filter(m => m.kelas === selectedKelas).length === 0 && (
+                  <div className="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-500">
+                    Belum ada modul materi khusus untuk Kelas {selectedKelas}.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: LATIHAN SOAL */}
+          {activeTab === 'latihan' && (
+            <div className="space-y-6">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-800">Latihan Soal Mandiri - Kelas {selectedKelas}</h2>
+                <p className="text-sm text-slate-500">Uji pemahamanmu sebelum menghadapi ulangan resmi.</p>
+              </div>
+
+              {/* 1. Pilihan Ganda */}
+              <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+                <h3 className="font-bold text-slate-800 text-md flex items-center space-x-2">
+                  <span className="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full">Tipe 1</span>
+                  <span>Soal Pilihan Ganda</span>
+                </h3>
+
+                {INITIAL_SOAL_LATIHAN.pilihanGanda
+                  .filter(s => s.kelas === selectedKelas)
+                  .map((soal, idx) => (
+                    <div key={soal.id} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                      <p className="font-medium text-sm text-slate-800">{idx + 1}. {soal.soal}</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {soal.opsi.map((opt, oIdx) => (
+                          <button
+                            key={oIdx}
+                            onClick={() => {
+                              if (oIdx === soal.jawaban) alert('Benar sekali! Jawaban kamu tepat.');
+                              else alert('Masih kurang tepat, coba lagi ya!');
+                            }}
+                            className="text-left px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white hover:bg-emerald-50 hover:border-emerald-300 transition-colors"
+                          >
+                            {String.fromCharCode(65 + oIdx)}. {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                ))}
+              </div>
+
+              {/* 2. Menjodohkan */}
+              <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+                <h3 className="font-bold text-slate-800 text-md flex items-center space-x-2">
+                  <span className="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full">Tipe 2</span>
+                  <span>Soal Menjodohkan</span>
+                </h3>
+
+                {INITIAL_SOAL_LATIHAN.menjodohkan
+                  .filter(s => s.kelas === selectedKelas)
+                  .map((m) => (
+                    <div key={m.id} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                      <p className="font-medium text-sm text-slate-800">{m.soal}</p>
+                      <div className="space-y-2">
+                        {m.pairs.map((p, pIdx) => (
+                          <div key={pIdx} className="flex flex-col sm:flex-row items-center justify-between bg-white p-3 rounded-lg border border-slate-200 gap-2">
+                            <span className="font-semibold text-xs text-slate-700">{p.item}</span>
+                            <span className="text-xs text-slate-400">➡️</span>
+                            <span className="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded border">{p.match}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                ))}
+              </div>
+
+              {/* 3. Essay */}
+              <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+                <h3 className="font-bold text-slate-800 text-md flex items-center space-x-2">
+                  <span className="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full">Tipe 3</span>
+                  <span>Soal Uraian / Essay</span>
+                </h3>
+
+                {INITIAL_SOAL_LATIHAN.essay
+                  .filter(s => s.kelas === selectedKelas)
+                  .map((e, idx) => (
+                    <div key={e.id} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                      <p className="font-medium text-sm text-slate-800">{idx + 1}. {e.soal}</p>
+                      <textarea
+                        rows="3"
+                        placeholder="Ketikkan jawaban latihanmu di sini..."
+                        className="w-full text-xs p-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                      ></textarea>
+                      <details className="text-xs text-emerald-700 bg-emerald-50/50 p-2 rounded cursor-pointer">
+                        <summary className="font-semibold">Lihat Kunci Jawaban Referensi</summary>
+                        <p className="mt-2 text-slate-600 leading-relaxed">{e.kunciSederhana}</p>
+                      </details>
+                    </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: ULANGAN HARIAN & SIMULASI UJIAN */}
+          {activeTab === 'ulangan' && (
+            <div className="space-y-6">
+              {!isTakingExam ? (
+                <>
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">Ulangan Harian Resmi</h2>
+                      <p className="text-sm text-slate-500">Nilai ulangan ini akan langsung direkap oleh Guru.</p>
+                    </div>
+                    
+                    {/* Lock Status Badge */}
+                    <div className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 ${
+                      examLocks[selectedKelas] || role === 'guru'
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                        : 'bg-amber-100 text-amber-800 border border-amber-200'
+                    }`}>
+                      {examLocks[selectedKelas] || role === 'guru' ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                      <span>
+                        Status: {examLocks[selectedKelas] ? 'TERBUKA / DAPAT DIKERJAKAN' : 'TERKUNCI BY GURU'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    {INITIAL_ULANGAN.filter(u => u.kelas === selectedKelas).map((ulangan) => (
+                      <div key={ulangan.id} className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="space-y-1">
+                          <span className="text-xs font-semibold text-emerald-600">Kelas {ulangan.kelas}</span>
+                          <h3 className="text-lg font-bold text-slate-800">{ulangan.judul}</h3>
+                          <div className="flex items-center space-x-4 text-xs text-slate-500 pt-1">
+                            <span className="flex items-center space-x-1">
+                              <Clock className="w-3.5 h-3.5" />
+                              <span>Waktu: {ulangan.durasiMenit} Menit</span>
+                            </span>
+                            <span>•</span>
+                            <span>{ulangan.soalList.length} Soal Pilihan Ganda</span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => startExam(ulangan)}
+                          disabled={!examLocks[selectedKelas] && role !== 'guru'}
+                          className={`w-full sm:w-auto px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center space-x-2 ${
+                            examLocks[selectedKelas] || role === 'guru'
+                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md cursor-pointer'
+                              : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                          }`}
+                        >
+                          {!examLocks[selectedKelas] && role !== 'guru' ? (
+                            <>
+                              <Lock className="w-4 h-4" />
+                              <span>Masih Terkunci</span>
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-4 h-4" />
+                              <span>Kerjakan Ulangan</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                /* Active Exam Interface */
+                <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                  {/* Exam Header */}
+                  <div className="flex justify-between items-center pb-4 border-b border-slate-200">
+                    <div>
+                      <h2 className="text-lg font-bold text-slate-800">{currentExam.judul}</h2>
+                      <p className="text-xs text-slate-500">Peserta: {user.name} ({user.email})</p>
+                    </div>
+                    {examScore === null && (
+                      <div className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-200 text-xs font-semibold flex items-center space-x-1.5">
+                        <Clock className="w-4 h-4 animate-pulse" />
+                        <span>Waktu Mengerjakan</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Result Card or Question Sheet */}
+                  {examScore !== null ? (
+                    <div className="text-center py-8 space-y-4">
+                      <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                        <CheckCircle className="w-10 h-10" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-800">Ulangan Selesai!</h3>
+                      <p className="text-slate-500 text-sm">Nilai kamu telah berhasil dikirimkan dan dicatat oleh guru.</p>
+                      
+                      <div className="inline-block bg-slate-50 border border-slate-200 rounded-xl px-8 py-4 my-2">
+                        <span className="text-xs text-slate-400 font-semibold uppercase block">Nilai Akhir</span>
+                        <span className="text-4xl font-extrabold text-emerald-600">{examScore}</span>
+                      </div>
+
+                      <div>
+                        <button
+                          onClick={() => setIsTakingExam(false)}
+                          className="bg-slate-800 hover:bg-slate-900 text-white font-medium px-6 py-2.5 rounded-lg text-sm"
+                        >
+                          Kembali ke Menu Ulangan
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Active Questions List */
+                    <div className="space-y-6">
+                      {currentExam.soalList.map((soal, idx) => (
+                        <div key={soal.id} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                          <p className="font-semibold text-sm text-slate-800">{idx + 1}. {soal.pertanyaan}</p>
+                          <div className="space-y-2">
+                            {soal.opsi.map((opt, oIdx) => (
+                              <label
+                                key={oIdx}
+                                className={`flex items-center space-x-3 p-3 rounded-lg border text-xs cursor-pointer transition-colors ${
+                                  studentAnswers[soal.id] === oIdx
+                                    ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-medium'
+                                    : 'bg-white border-slate-200 hover:bg-slate-100'
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`soal_${soal.id}`}
+                                  checked={studentAnswers[soal.id] === oIdx}
+                                  onChange={() => setStudentAnswers({ ...studentAnswers, [soal.id]: oIdx })}
+                                  className="text-emerald-600 focus:ring-emerald-500"
+                                />
+                                <span>{String.fromCharCode(65 + oIdx)}. {opt}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="pt-4 border-t border-slate-200 flex justify-end">
+                        <button
+                          onClick={submitExam}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3 rounded-xl shadow-md transition-colors text-sm"
+                        >
+                          Kirim Jawaban & Selesaikan
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 4: REKAP NILAI SISWA (GURU ONLY) */}
+          {activeTab === 'rekap' && role === 'guru' && (
+            <div className="space-y-6">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Rekapitulasi Nilai Siswa</h2>
+                  <p className="text-sm text-slate-500">Ekspor langsung data hasil ulangan ke format spreadsheet / CSV.</p>
+                </div>
+
+                <button
+                  onClick={exportToCSV}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2.5 rounded-lg text-sm flex items-center space-x-2 shadow-sm transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Ekspor ke Spreadsheet (.csv)</span>
+                </button>
+              </div>
+
+              {/* Score Table */}
+              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase font-bold">
+                        <th className="p-3">No</th>
+                        <th className="p-3">Nama Siswa</th>
+                        <th className="p-3">Email</th>
+                        <th className="p-3">Kelas</th>
+                        <th className="p-3">Judul Ulangan</th>
+                        <th className="p-3 text-center">Nilai</th>
+                        <th className="p-3">Waktu Selesai</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {results.map((r, index) => (
+                        <tr key={r.id} className="hover:bg-slate-50">
+                          <td className="p-3 font-medium text-slate-400">{index + 1}</td>
+                          <td className="p-3 font-semibold text-slate-800">{r.nama}</td>
+                          <td className="p-3 text-slate-500">{r.email}</td>
+                          <td className="p-3">
+                            <span className="bg-slate-100 px-2 py-0.5 rounded font-semibold text-slate-700">
+                              Kelas {r.kelas}
+                            </span>
+                          </td>
+                          <td className="p-3 text-slate-700">{r.judulUlangan}</td>
+                          <td className="p-3 text-center">
+                            <span className={`font-bold px-2 py-1 rounded ${
+                              r.nilai >= 75 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                            }`}>
+                              {r.nilai}
+                            </span>
+                          </td>
+                          <td className="p-3 text-slate-400">{r.tanggal}</td>
+                        </tr>
+                      ))}
+
+                      {results.length === 0 && (
+                        <tr>
+                          <td colSpan="7" className="text-center py-8 text-slate-400">
+                            Belum ada siswa yang mengerjakan ulangan.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: KELOLA AKSES & LOCK ULANGAN (GURU ONLY) */}
+          {activeTab === 'kelola' && role === 'guru' && (
+            <div className="space-y-6">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-800">Pengaturan Lock & Akses Ulangan</h2>
+                <p className="text-sm text-slate-500">Atur kapan ulangan harian dibuka atau dikunci untuk setiap kelas.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {['X', 'XI', 'XII'].map((k) => (
+                  <div key={k} className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-bold text-lg text-slate-800">Kelas {k}</h3>
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        examLocks[k] ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                      }`}>
+                        {examLocks[k] ? 'TERBUKA' : 'TERKUNCI'}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-500">
+                      {examLocks[k] 
+                        ? 'Siswa kelas ini SEKARANG BISA mengerjakan ulangan.' 
+                        : 'Siswa kelas ini BELUM BISA membuka/mengerjakan ulangan.'
+                      }
+                    </p>
+
+                    <button
+                      onClick={() => setExamLocks({ ...examLocks, [k]: !examLocks[k] })}
+                      className={`w-full py-2.5 rounded-lg text-xs font-bold flex items-center justify-center space-x-2 transition-colors ${
+                        examLocks[k]
+                          ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'
+                          : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                      }`}
+                    >
+                      {examLocks[k] ? (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          <span>Kunci Ulangan Sekarang</span>
+                        </>
+                      ) : (
+                        <>
+                          <Unlock className="w-4 h-4" />
+                          <span>Buka Ulangan Sekarang</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </main>
+      </div>
+    </div>
+  );
+}
