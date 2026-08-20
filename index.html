@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruang Bahasa - Aplikasi Pembelajaran</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-emerald-700 text-white p-4 shadow-md sticky top-0 z-20">
+    <div class="max-w-5xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">📚</span>
+        <div>
+          <h1 class="text-lg font-bold leading-tight">Ruang Bahasa</h1>
+          <p class="text-xs text-emerald-200">Bahasa Indonesia SMA</p>
+        </div>
+      </div>
+
+      <!-- KONTROL PROFIL & KELAS -->
+      <div class="flex items-center gap-3">
+        <div class="flex bg-emerald-800 p-1 rounded-lg text-xs font-bold">
+          <button onclick="changeKelas('X')" id="k-X" class="px-2.5 py-1 rounded text-white bg-emerald-600">X</button>
+          <button onclick="changeKelas('XI')" id="k-XI" class="px-2.5 py-1 rounded text-emerald-200">XI</button>
+          <button onclick="changeKelas('XII')" id="k-XII" class="px-2.5 py-1 rounded text-emerald-200">XII</button>
+        </div>
+        <div class="text-right text-xs hidden sm:block">
+          <p class="font-bold" id="user-name">Ahmad Siswa</p>
+          <p class="text-emerald-200" id="user-role">Siswa Kelas XII</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <div class="max-w-5xl mx-auto p-4 grid grid-cols-1 md:grid-cols-4 gap-6">
+
+    <!-- SIDEBAR / MENU UTAMA -->
+    <aside class="md:col-span-1 space-y-2">
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider px-2">Menu Utama</p>
+      <button onclick="switchTab('materi')" id="tab-materi" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-emerald-700 text-white shadow-sm flex items-center gap-3">
+        <span>📖</span> Materi & Video
+      </button>
+      <button onclick="switchTab('latihan')" id="tab-latihan" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 flex items-center gap-3">
+        <span>📝</span> Latihan Soal
+      </button>
+      <button onclick="switchTab('ulangan')" id="tab-ulangan" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 flex items-center gap-3">
+        <span>✏️</span> Ulangan Harian
+      </button>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="md:col-span-3">
+
+      <!-- SECTION MATERI -->
+      <section id="sec-materi" class="space-y-4">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <h2 class="text-xl font-bold text-slate-800">MATERI PEMBELAJARAN KELAS <span id="label-kelas-materi">XII</span></h2>
+          <p class="text-slate-500 text-sm mt-1">Pelajari teks-teks Bahasa Indonesia secara mendalam lengkap dengan video penjelasan dari guru.</p>
+        </div>
+
+        <div id="container-materi" class="space-y-4">
+          <!-- Diisi otomatis lewat JS -->
+        </div>
+      </section>
+
+      <!-- SECTION LATIHAN SOAL -->
+      <section id="sec-latihan" class="hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <h2 class="text-xl font-bold text-slate-800">Latihan Soal Mandiri</h2>
+          <p class="text-slate-500 text-sm mt-1">Uji pemahaman materi Anda melalui kuis latihan singkat.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center py-12">
+          <span class="text-4xl">📝</span>
+          <h3 class="text-lg font-bold text-slate-800 mt-2">Soal Latihan Siap Dimulai</h3>
+          <p class="text-slate-500 text-sm mb-4">Pilih paket latihan untuk memulai evaluasi mandiri.</p>
+          <button onclick="alert('Latihan soal siap dimulai!')" class="bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm shadow hover:bg-emerald-700 transition">Mulai Kuis</button>
+        </div>
+      </section>
+
+      <!-- SECTION ULANGAN HARIAN -->
+      <section id="sec-ulangan" class="hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <h2 class="text-xl font-bold text-slate-800">Ulangan Harian Online</h2>
+          <p class="text-slate-500 text-sm mt-1">Kerjakan ulangan sesuai waktu yang ditentukan oleh guru pengampu.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <div class="border-l-4 border-emerald-600 pl-4 py-1">
+            <h3 class="font-bold text-slate-800">Ulangan Harian 1: Teks Evaluasi & Deskripsi</h3>
+            <p class="text-xs text-slate-500">Durasi: 45 Menit • 20 Soal Pilihan Ganda</p>
+          </div>
+          <button onclick="alert('Fitur Ulangan Harian dibuka sesuai jadwal!')" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm shadow hover:bg-emerald-700 transition">Masuk Ruang Ulangan</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    let currentKelas = 'XII';
+    
+    const dbMateri = {
+      'X': [
+        { bab: 'Bab 1: Mengungkap Fakta Alam', judul: 'Teks Laporan Hasil Observasi (LHO)', deskripsi: 'Memahami struktur, ciri kebahasaan, dan cara menyusun teks LHO berdasarkan pengamatan nyata.', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+      ],
+      'XI': [
+        { bab: 'Bab 1: Menyusun Prosedur Kerja', judul: 'Teks Prosedur Kompleks', deskripsi: 'Langkah-langkah terstruktur dalam melakukan atau membuat sesuatu dengan petunjuk jelas.', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+      ],
+      'XII': [
+        { bab: 'Bab 1: Surat Menyurat Resmi', judul: 'Surat Lamaran Pekerjaan & Teks Editorial', deskripsi: 'Seni menulis surat resmi lamaran kerja dan menganalisis pandangan/opini media massa.', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+      ]
+    };
+
+    function renderContent() {
+      document.getElementById('label-kelas-materi').innerText = currentKelas;
+      document.getElementById('user-role').innerText = 'Siswa Kelas ' + currentKelas;
+
+      const items = dbMateri[currentKelas] || [];
+      const container = document.getElementById('container-materi');
+      
+      container.innerHTML = items.map(item => `
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">${item.bab}</span>
+          <h3 class="text-lg font-bold text-slate-800">${item.judul}</h3>
+          <p class="text-sm text-slate-600">${item.deskripsi}</p>
+          <div class="aspect-video w-full rounded-xl overflow-hidden bg-slate-100">
+            <iframe class="w-full h-full" src="${item.video}" title="Video Tutorial" frameborder="0" allowfullscreen></iframe>
+          </div>
+          <button onclick="alert('Membuka materi lengkap...')" class="bg-emerald-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow hover:bg-emerald-800 transition">Pelajari Sekarang</button>
+        </div>
+      `).join('');
+    }
+
+    function changeKelas(k) {
+      currentKelas = k;
+      ['X', 'XI', 'XII'].forEach(item => {
+        const btn = document.getElementById('k-' + item);
+        if(item === k) {
+          btn.className = "px-2.5 py-1 rounded text-white bg-emerald-600";
+        } else {
+          btn.className = "px-2.5 py-1 rounded text-emerald-200 hover:text-white";
+        }
+      });
+      renderContent();
+    }
+
+    function switchTab(tab) {
+      ['materi', 'latihan', 'ulangan'].forEach(t => {
+        const sec = document.getElementById('sec-' + t);
+        const btn = document.getElementById('tab-' + t);
+        if (t === tab) {
+          sec.classList.remove('hidden');
+          btn.className = "w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-emerald-700 text-white shadow-sm flex items-center gap-3";
+        } else {
+          sec.classList.add('hidden');
+          btn.className = "w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 flex items-center gap-3";
+        }
+      });
+    }
+
+    // Initial Load
+    changeKelas('XII');
+  </script>
+</body>
+</html>
