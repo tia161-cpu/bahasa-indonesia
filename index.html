@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruang Bahasa - Aplikasi Pembelajaran</title>
+  <!-- Load Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-emerald-700 text-white p-4 shadow-lg sticky top-0 z-10">
+    <div class="max-w-3xl mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold flex items-center gap-2">
+        <span>📚</span> Ruang Bahasa
+      </h1>
+      <span class="text-xs bg-emerald-800 px-3 py-1 rounded-full border border-emerald-500">SMA / SMK</span>
+    </div>
+  </header>
+
+  <!-- KONTEN UTAMA -->
+  <main class="max-w-3xl mx-auto p-4 space-y-6">
+
+    <!-- NAVIGASI KELAS -->
+    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex justify-around">
+      <button onclick="pilihKelas('X')" id="btn-X" class="btn-kelas px-5 py-2 rounded-lg font-semibold text-sm transition-all bg-emerald-600 text-white shadow">Kelas X</button>
+      <button onclick="pilihKelas('XI')" id="btn-XI" class="btn-kelas px-5 py-2 rounded-lg font-semibold text-sm transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">Kelas XI</button>
+      <button onclick="pilihKelas('XII')" id="btn-XII" class="btn-kelas px-5 py-2 rounded-lg font-semibold text-sm transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">Kelas XII</button>
+    </div>
+
+    <!-- AREA MATERI -->
+    <div id="materi-container" class="space-y-4">
+      <!-- Materi akan diisi otomatis lewat Javascript -->
+    </div>
+
+  </main>
+
+  <!-- SCRIPT INTERAKTIF -->
+  <script>
+    const dataMateri = {
+      'X': [
+        {
+          bab: 'Bab 1: Mengungkap Fakta Alam',
+          judul: 'Teks Laporan Hasil Observasi (LHO)',
+          deskripsi: 'Memahami struktur, ciri kebahasaan, dan cara menyusun teks LHO berdasarkan pengamatan nyata.',
+          poin: [
+            '<b>Pernyataan Umum:</b> Berisi pembuka atau pengantar hal yang disampaikan.',
+            '<b>Deskripsi Bagian:</b> Rincian detail mengenai objek yang diamati.',
+            '<b>Deskripsi Manfaat:</b> Menjelaskan kegunaan objek dalam kehidupan.'
+          ]
+        }
+      ],
+      'XI': [
+        {
+          bab: 'Bab 1: Menyusun Prosedur Kerja',
+          judul: 'Teks Prosedur Kompleks',
+          deskripsi: 'Langkah-langkah terstruktur dalam melakukan atau membuat sesuatu dengan petunjuk jelas.',
+          poin: [
+            '<b>Tujuan:</b> Hasil akhir yang akan dicapai.',
+            '<b>Langkah-langkah:</b> Urutan kegiatan yang tidak boleh tertukar.',
+            '<b>Penegasan Ulang:</b> Harapan/manfaat jika petunjuk diikuti.'
+          ]
+        }
+      ],
+      'XII': [
+        {
+          bab: 'Bab 1: Surat Menyurat Resmi',
+          judul: 'Surat Lamaran Pekerjaan & Teks Editorial',
+          deskripsi: 'Seni menulis surat resmi lamaran kerja dan menganalisis pandangan media massa.',
+          poin: [
+            '<b>Sistematika Surat:</b> Tempat/tanggal, lampiran, perihal, alamat, salam pembuka, isi, penutup, serta tanda tangan.',
+            '<b>Teks Editorial:</b> Opini atau pandangan resmi redaksi terhadap isu hangat.'
+          ]
+        }
+      ]
+    };
+
+    function renderMateri(kelas) {
+      const container = document.getElementById('materi-container');
+      const item = dataMateri[kelas][0];
+
+      let poinHTML = '';
+      item.poin.forEach(p => {
+        poinHTML += `<li class="ml-4 list-disc">${p}</li>`;
+      });
+
+      container.innerHTML = `
+        <div class="bg-white rounded-xl shadow-md p-5 border border-slate-200 space-y-4 animate-fade-in">
+          <span class="inline-block text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">${item.bab}</span>
+          <h2 class="text-xl font-bold text-slate-800">${item.judul}</h2>
+          <p class="text-slate-600 text-sm leading-relaxed">${item.deskripsi}</p>
+          
+          <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 text-sm text-slate-700 space-y-2">
+            <p class="font-semibold text-slate-900 mb-1">Rangkuman Materi:</p>
+            <ul class="space-y-1">${poinHTML}</ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function pilihKelas(kelas) {
+      document.querySelectorAll('.btn-kelas').forEach(btn => {
+        btn.className = "btn-kelas px-5 py-2 rounded-lg font-semibold text-sm transition-all bg-slate-100 text-slate-600 hover:bg-slate-200";
+      });
+      document.getElementById('btn-' + kelas).className = "btn-kelas px-5 py-2 rounded-lg font-semibold text-sm transition-all bg-emerald-600 text-white shadow";
+      
+      renderMateri(kelas);
+    }
+
+    // Tampilkan kelas X saat pertama kali buka
+    renderMateri('X');
+  </script>
+</body>
+</html>
